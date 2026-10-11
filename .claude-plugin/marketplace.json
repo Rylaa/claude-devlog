@@ -1,0 +1,14 @@
+{
+  "name": "claude-devlog",
+  "owner": {
+    "name": "Rylaa"
+  },
+  "description": "Claude Code geliştirme günlüğü (devlog) plugin'i",
+  "plugins": [
+    {
+      "name": "devlog",
+      "source": "./",
+      "description": "Claude Code ile her gün hangi projede ne geliştirildiğinin özeti ve her projede en son ne yapıldığı."
+    }
+  ]
+}

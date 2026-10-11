@@ -1,0 +1,7 @@
+{
+  "name": "devlog",
+  "version": "0.1.0",
+  "description": "Claude Code ile her gün hangi projede ne geliştirildiğinin özeti ve her projede en son ne yapıldığı.",
+  "author": { "name": "Rylaa" },
+  "repository": "https://github.com/Rylaa/claude-devlog"
+}
