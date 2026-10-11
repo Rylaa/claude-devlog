@@ -1,43 +1,43 @@
 # claude-devlog
 
-Claude Code ile her gün hangi projede ne geliştirildiğini okunur bir özet olarak verir. Her projede en son ne yapıldığını da tek komutla gösterir.
+A readable daily summary of what you built with Claude Code, project by project, plus a one-command view of the last thing done in each project.
 
-- **Hiçbir şey kaçmaz.** Kaynak, Claude Code'un tüm oturum kayıtları (`~/.claude/projects`). Terminal, Desktop, SDK ile çalışan uygulamalar ve subagent'lar buna dahil.
-- **Sürekli güncel.** Her cevaptan sonra arka planda çalışan bir Stop hook oturumun kısa özetini `~/.claude/devlog/sessions/` altına arşivler. Her rapor öncesinde değişmiş tüm kayıtlar yeniden taranır, yani hook bir şeyi kaçırsa bile rapor tam çıkar.
-- **Kalıcı.** Claude Code eski oturum kayıtlarını silse bile arşiv kalır.
-- **Commit'ler git'ten gelir.** `git log` ile, yalnızca senin e-postanla yapılanlar.
+- **Nothing is missed.** The source is every Claude Code session transcript (`~/.claude/projects`): terminal, Desktop, SDK-driven apps and subagents.
+- **Always up to date.** An async Stop hook archives a compact digest of the session to `~/.claude/devlog/sessions/` after every turn. Every report also re-scans all changed transcripts first, so the report is complete even if the hook missed something.
+- **Durable.** The archive survives Claude Code's transcript cleanup.
+- **Commits come from git.** Pulled with `git log`, filtered to your own email.
 
-## Kurulum
+## Install
 
 ```
 /plugin marketplace add Rylaa/claude-devlog
 /plugin install devlog@claude-devlog
 ```
 
-Gereken tek şey `python3` (3.9+). Harici bağımlılık yok.
+Requires only `python3` (3.9+). No other dependencies.
 
-## Kullanım
+## Usage
 
-| Komut | Ne verir |
+| Command | Output |
 |---|---|
-| `/devlog:devlog` | Bugünün özeti: proje proje ne yapıldı, ayrıca açık kalanlar |
-| `/devlog:devlog dün` · `/devlog:devlog 2026-10-09` | Belirli bir günün özeti |
-| `/devlog:devlog hafta` | Son 7 gün, günlük özetlerden toplanır |
-| `/devlog:devlog son` | Her projede en son ne yapıldı |
-| `/devlog:devlog son <proje>` | Tek bir projenin son durumu |
+| `/devlog:devlog` | Today's summary: what was done per project, plus open items |
+| `/devlog:devlog yesterday` · `/devlog:devlog 2026-10-09` | Summary of a specific day |
+| `/devlog:devlog week` | Last 7 days, built from the daily summaries |
+| `/devlog:devlog last` | The last thing done in each project |
+| `/devlog:devlog last <project>` | Latest state of one project |
 
-"Bugün ne yaptık?" ya da "X projesinde en son ne yapıldı?" diye sormak da yeterli.
+Asking "what did we do today?" or "what was last done in project X?" works too.
 
-Günlük özetler `~/.claude/devlog/daily/<tarih>.md` dosyasına kaydedilir.
+Daily summaries are saved to `~/.claude/devlog/daily/<date>.md`.
 
-Ham rapor, Claude'suz, terminalden de alınabilir:
+You can also get the raw report from the terminal, without Claude:
 
 ```
-python3 skills/devlog/devlog.py today      # yesterday | 2026-10-09 | 7d | last [proje] | sync
+python3 skills/devlog/devlog.py today      # yesterday | 2026-10-09 | 7d | last [project] | sync
 ```
 
-## Nasıl çalışır
+## How it works
 
-`skills/devlog/devlog.py` her oturum kaydından kullanıcı isteklerini, Claude'un son cevabını, düzenlenen dosyaları, commit'leri ve PR'ları çıkarır. Bunları oturum başına küçük bir JSON olarak arşivler. Rapor arşivden gün ve proje bazında üretilir. Worktree'ler ana reponun adı altında toplanır. Aynı şablonla başlayan, tekrarlı ve tek seferlik otomasyon çağrıları (`claude -p` ile çalışan yargıç ya da sınıflandırıcı gibi) gizlenir, raporda yalnızca sayıları gösterilir.
+`skills/devlog/devlog.py` extracts from each transcript the user prompts, Claude's final reply per turn, edited files, commits and PRs. It archives them as one small JSON file per session. Reports are built from the archive by day and by project, with worktrees grouped under their main repository. Repeated one-shot automation calls that start with the same template (for example `claude -p` judges or classifiers) are hidden; the report only shows how many there were.
 
 Test: `python3 skills/devlog/test_devlog.py`
