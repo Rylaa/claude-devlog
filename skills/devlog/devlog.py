@@ -6,7 +6,7 @@ Transcript'leri (~/.claude/projects) oturum başına küçük özetlere arşivle
 
   devlog.py hook                 Stop hook: stdin'deki oturumu arşivler
   devlog.py sync                 değişen tüm transcript'leri arşivler
-  devlog.py [today|yesterday|YYYY-MM-DD|7d]   o günün/aralığın raporu
+  devlog.py [today|yesterday|YYYY-MM-DD|7d|A..B] [proje]   o günün/aralığın raporu
   devlog.py last [proje]         her projede en son ne yapıldı
 """
 import json, os, re, subprocess, sys
@@ -221,15 +221,18 @@ def git_commits(cwds, start, end):
     return list(seen.values())
 
 
-def report(start, end):
+def report(start, end, only=None):
     by_proj, real, auto = {}, *sessions()
     in_range = lambda tu: tu["t"] and start <= local(tu["t"]).date() <= end
+    if only:
+        real = [s for s in real if only.lower() in s["project"].lower()]
+        auto = [s for s in auto if only.lower() in s["project"].lower()]
     for s in real:
         turns = [tu for tu in s["turns"] if in_range(tu)]
         if turns:
             by_proj.setdefault(s["project"], []).append((s, turns))
     hidden = Counter(s["project"] for s in auto if in_range(s["turns"][0]))
-    label = str(start) if start == end else f"{start} → {end}"
+    label = (str(start) if start == end else f"{start} → {end}") + (f" · {only}" if only else "")
     out = [f"# Claude Code günlüğü — {label}", ""]
     if not by_proj:
         out.append("Bu aralıkta kayıt yok.")
@@ -287,9 +290,11 @@ def main(argv):
         start = end = today - timedelta(days=1)
     elif re.fullmatch(r"\d+d", arg):
         start, end = today - timedelta(days=int(arg[:-1]) - 1), today
+    elif ".." in arg:  # 2026-10-05..2026-10-11
+        start, end = map(date.fromisoformat, arg.split(".."))
     else:
         start = end = date.fromisoformat(arg)
-    print(report(start, end))
+    print(report(start, end, argv[1] if len(argv) > 1 else None))
 
 
 if __name__ == "__main__":

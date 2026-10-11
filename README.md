@@ -23,6 +23,8 @@ Requires only `python3` (3.9+). No other dependencies.
 | `/devlog:devlog` | Today's summary: what was done per project, plus open items |
 | `/devlog:devlog yesterday` · `/devlog:devlog 2026-10-09` | Summary of a specific day |
 | `/devlog:devlog week` | Last 7 days, built from the daily summaries |
+| `/devlog:devlog week <project>` | What was built in one project over the last 7 days |
+| `/devlog:devlog 2026-10-05..2026-10-11 <project>` | One project over any date range |
 | `/devlog:devlog last` | The last thing done in each project |
 | `/devlog:devlog last <project>` | Latest state of one project |
 
@@ -33,7 +35,7 @@ Daily summaries are saved to `~/.claude/devlog/daily/<date>.md`.
 You can also get the raw report from the terminal, without Claude:
 
 ```
-python3 skills/devlog/devlog.py today      # yesterday | 2026-10-09 | 7d | last [project] | sync
+python3 skills/devlog/devlog.py today      # yesterday | 2026-10-09 | 7d | A..B, optional [project]; last [project]; sync
 ```
 
 ## How it works

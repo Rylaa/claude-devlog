@@ -1,7 +1,7 @@
 ---
 name: devlog
 description: Claude Code ile hangi projede ne geliştirildiğinin günlük özeti ve her projede en son ne yapıldığı. Kullanıcı "bugün ne yaptık", "günlük özet", "dün neler geliştirildi", "bu hafta", "X projesinde en son ne yapıldı", "devlog" dediğinde kullan.
-argument-hint: "[bugün|dün|YYYY-MM-DD|7g|son [proje]]"
+argument-hint: "[bugün|dün|YYYY-MM-DD|hafta|A..B|son] [proje]"
 allowed-tools: Bash(python3 -I *), Read, Write
 ---
 
@@ -16,7 +16,12 @@ değişmiş tüm transcript'leri yeniden tarar. Transcript silinse bile arşiv k
 1. Argümanı script argümanına çevir:
    - boş / `bugün` → `today`; `dün` → `yesterday`; `YYYY-MM-DD` → aynen
    - `son` → `last`; `son <proje>` → `last <proje>`
-   - `7g`, `hafta`, N gün: ham çıktı çok büyük (günde 30-100 KB), tek seferde okuma. Her gün için
+   - Tarih aralığı: `2026-10-05..2026-10-11` → aynen
+   - Proje adı verildiyse (ör. `hafta ugc`, `dün viralz`, `2026-10-05..2026-10-11 muvi`) script'e ikinci argüman
+     olarak geçir; adın bir parçası yeter. `hafta`/`7g` → `7d`. Tek projenin bir haftası 5-50 KB tutar, tek seferde oku.
+     Özeti gün gün değil iş başlıklarıyla yaz: neler eklendi, neler düzeltildi, ne yayına/staging'e çıktı, commit sayısı,
+     sonra açık kalanlar.
+   - Projesiz `7g`, `hafta`, N gün: ham çıktı çok büyük (günde 30-100 KB), tek seferde okuma. Her gün için
      `~/.claude/devlog/daily/<tarih>.md` varsa ve gün bugün değilse onu kullan; yoksa o günü aşağıdaki
      adımlarla özetleyip kaydet. Sonra günlük özetlerden haftalık özet çıkar.
 2. Çalıştır ve dosyaya yaz, sonra Read ile oku (büyükse offset/limit ile parça parça):
